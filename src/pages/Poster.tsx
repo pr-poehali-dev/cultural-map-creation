@@ -1,391 +1,446 @@
 import { Link } from "react-router-dom";
 import Icon from "@/components/ui/icon";
 
+const PEOPLES_IMG = "https://cdn.poehali.dev/projects/1b1581b6-ac92-4b5f-adce-b651ee5e6b7e/files/f95dac0a-cdfd-43a7-9657-e149e6b1705b.jpg";
+const SYMBOLS_IMG = "https://cdn.poehali.dev/projects/1b1581b6-ac92-4b5f-adce-b651ee5e6b7e/files/266e85be-1493-4abd-84c0-53f73141767d.jpg";
+
 const PEOPLES = [
-  "Русские", "Татары", "Башкиры", "Чуваши", "Чеченцы",
-  "Аварцы", "Мордва", "Армяне", "Украинцы", "Якуты",
-  "Буряты", "Кабардинцы", "Осетины", "Даргинцы", "Кумыки",
-  "Ингуши", "Лезгины", "Тувинцы", "Коми", "Марийцы",
-  "Удмурты", "Карачаевцы", "Калмыки", "Ненцы", "Эвенки",
+  { name: "Русские", region: "Центральная Россия" },
+  { name: "Татары", region: "Поволжье" },
+  { name: "Башкиры", region: "Урал" },
+  { name: "Чеченцы", region: "Кавказ" },
+  { name: "Аварцы", region: "Дагестан" },
+  { name: "Мордва", region: "Поволжье" },
+  { name: "Якуты", region: "Сибирь" },
+  { name: "Буряты", region: "Байкал" },
+  { name: "Осетины", region: "Кавказ" },
+  { name: "Тувинцы", region: "Сибирь" },
+  { name: "Коми", region: "Север" },
+  { name: "Ненцы", region: "Арктика" },
 ];
 
-const RINGS = [
-  { r: 138, count: 8, offset: 0 },
-  { r: 100, count: 6, offset: 18 },
-  { r: 64, count: 4, offset: 30 },
-];
-
-function polarToXY(cx: number, cy: number, r: number, angleDeg: number) {
-  const rad = ((angleDeg - 90) * Math.PI) / 180;
-  return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+// Герб — двуглавый орёл SVG
+function Eagle({ size = 80 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 100 100" fill="none">
+      {/* Тело */}
+      <ellipse cx="50" cy="58" rx="16" ry="20" fill="#c8a040" />
+      {/* Левое крыло */}
+      <path d="M34 54 C18 44 8 30 14 20 C20 12 32 22 36 36 C38 42 36 50 34 54Z" fill="#c8a040" />
+      <path d="M34 54 C20 48 10 38 16 28 C20 22 30 30 34 42Z" fill="#b08030" opacity="0.5" />
+      {/* Правое крыло */}
+      <path d="M66 54 C82 44 92 30 86 20 C80 12 68 22 64 36 C62 42 64 50 66 54Z" fill="#c8a040" />
+      <path d="M66 54 C80 48 90 38 84 28 C80 22 70 30 66 42Z" fill="#b08030" opacity="0.5" />
+      {/* Голова левая */}
+      <circle cx="38" cy="30" r="10" fill="#c8a040" />
+      <circle cx="35" cy="27" r="3" fill="#1a1a2e" />
+      <circle cx="35.8" cy="26.2" r="1" fill="#fff" opacity="0.6" />
+      <path d="M31 33 L28 36 L33 35Z" fill="#d4782a" />
+      {/* Корона левая */}
+      <path d="M32 21 L34 17 L36 20 L38 16 L40 20 L42 17 L44 21" stroke="#c8a040" strokeWidth="1.5" fill="none" />
+      {/* Голова правая */}
+      <circle cx="62" cy="30" r="10" fill="#c8a040" />
+      <circle cx="65" cy="27" r="3" fill="#1a1a2e" />
+      <circle cx="64.2" cy="26.2" r="1" fill="#fff" opacity="0.6" />
+      <path d="M69 33 L72 36 L67 35Z" fill="#d4782a" />
+      {/* Корона правая */}
+      <path d="M56 21 L58 17 L60 20 L62 16 L64 20 L66 17 L68 21" stroke="#c8a040" strokeWidth="1.5" fill="none" />
+      {/* Большая корона */}
+      <path d="M44 18 L47 12 L50 10 L53 12 L56 18" stroke="#c8a040" strokeWidth="2" fill="none" />
+      <circle cx="50" cy="10" r="3" fill="#c8a040" />
+      {/* Скипетр и держава */}
+      <line x1="44" y1="62" x2="40" y2="76" stroke="#c8a040" strokeWidth="2" />
+      <circle cx="40" cy="77" r="3" fill="#c8a040" />
+      <line x1="56" y1="62" x2="60" y2="76" stroke="#c8a040" strokeWidth="2" />
+      <circle cx="62" cy="74" r="4" fill="#c8a040" />
+      <circle cx="62" cy="74" r="2.5" fill="none" stroke="#b08030" strokeWidth="0.8" />
+      {/* Щит на груди */}
+      <path d="M44 54 L44 68 Q50 74 56 68 L56 54Z" fill="#cc0000" />
+      <path d="M47 57 Q50 60 53 57 L53 66 Q50 70 47 66Z" fill="#cc0000" />
+      {/* Всадник на щите */}
+      <circle cx="50" cy="58" r="2" fill="#c8a040" />
+      <path d="M50 60 L50 65" stroke="#c8a040" strokeWidth="1.2" />
+      <path d="M50 62 L47 64 L48 65" stroke="#c8a040" strokeWidth="0.8" fill="none" />
+    </svg>
+  );
 }
 
-const ORNAMENT_DOTS = Array.from({ length: 36 }, (_, i) => {
-  const { x, y } = polarToXY(300, 300, 270, i * 10);
-  return { x, y, i };
-});
+// Флаг России
+function RussianFlag({ width = 120, height = 80 }: { width?: number; height?: number }) {
+  return (
+    <svg width={width} height={height} viewBox="0 0 120 80" rx="2">
+      <rect x="0" y="0" width="120" height="26.6" fill="#FFFFFF" />
+      <rect x="0" y="26.6" width="120" height="26.6" fill="#0039A6" />
+      <rect x="0" y="53.2" width="120" height="26.8" fill="#D52B1E" />
+      <rect x="0" y="0" width="120" height="80" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
+    </svg>
+  );
+}
 
 export default function Poster() {
-  const cx = 300, cy = 300;
-
   return (
     <div
       className="min-h-screen flex flex-col items-center"
       style={{
-        background: "#0e0e14",
+        background: "#06070d",
         fontFamily: "'Cormorant', serif",
-        padding: "2rem 1rem 4rem",
+        padding: "1.5rem 1rem 4rem",
       }}
     >
       {/* nav */}
-      <div className="w-full max-w-4xl flex justify-between items-center mb-8">
+      <div className="w-full max-w-3xl flex justify-between items-center mb-6">
         <Link
           to="/"
-          className="flex items-center gap-2 text-sm opacity-50 hover:opacity-100 transition-opacity"
+          className="flex items-center gap-2 text-sm opacity-40 hover:opacity-80 transition-opacity"
           style={{ color: "#c8a96e", fontFamily: "'IBM Plex Sans', sans-serif" }}
         >
           <Icon name="ArrowLeft" size={15} />
           Назад
         </Link>
         <span
-          className="text-xs tracking-widest uppercase opacity-30"
-          style={{ fontFamily: "'IBM Plex Sans', sans-serif", letterSpacing: "0.25em", color: "#e8dfc8" }}
+          style={{
+            fontFamily: "'IBM Plex Sans', sans-serif",
+            fontSize: "0.65rem",
+            letterSpacing: "0.3em",
+            textTransform: "uppercase",
+            color: "#e8dfc8",
+            opacity: 0.25,
+          }}
         >
           Плакат · Единство народов России
         </span>
       </div>
 
-      {/* POSTER */}
+      {/* ===== ПЛАКАТ ===== */}
       <div
         id="poster"
         style={{
-          width: "600px",
-          background: "linear-gradient(170deg, #0a0c12 0%, #111420 50%, #0c0e18 100%)",
-          border: "1px solid rgba(200,169,110,0.25)",
-          boxShadow: "0 0 80px rgba(200,169,110,0.08), 0 0 0 1px rgba(255,255,255,0.04)",
+          width: "680px",
+          background: "linear-gradient(180deg, #0a0b14 0%, #0d1020 35%, #0a0b14 100%)",
+          border: "2px solid rgba(200,169,110,0.4)",
+          boxShadow: "0 0 120px rgba(200,169,110,0.1), inset 0 0 60px rgba(200,169,110,0.03)",
           position: "relative",
           overflow: "hidden",
-          padding: "0",
         }}
       >
-        {/* Угловые орнаменты */}
-        {[
-          { top: 16, left: 16, rotate: 0 },
-          { top: 16, right: 16, rotate: 90 },
-          { bottom: 16, right: 16, rotate: 180 },
-          { bottom: 16, left: 16, rotate: 270 },
-        ].map((pos, i) => (
-          <svg
-            key={i}
-            width="40"
-            height="40"
-            viewBox="0 0 40 40"
-            style={{ position: "absolute", ...pos, transform: `rotate(${pos.rotate}deg)`, opacity: 0.5 }}
-          >
-            <path d="M2 2 L18 2 M2 2 L2 18" stroke="#c8a96e" strokeWidth="1.5" fill="none" />
-            <circle cx="2" cy="2" r="2" fill="#c8a96e" />
-          </svg>
-        ))}
+        {/* Фоновая текстура — флаговые полосы едва видимые */}
+        <div style={{
+          position: "absolute", inset: 0, opacity: 0.04,
+          background: "repeating-linear-gradient(180deg, #fff 0px, #fff 80px, #0039A6 80px, #0039A6 160px, #D52B1E 160px, #D52B1E 240px)",
+          zIndex: 0,
+        }} />
 
-        {/* Горизонтальные декоративные полосы */}
-        <div style={{ height: "3px", background: "linear-gradient(90deg, transparent, #c8a96e 30%, #e8d08a 50%, #c8a96e 70%, transparent)", opacity: 0.7 }} />
+        {/* Верхняя полоса — цвета флага */}
+        <div style={{ display: "flex", height: "6px", position: "relative", zIndex: 1 }}>
+          <div style={{ flex: 1, background: "#FFFFFF" }} />
+          <div style={{ flex: 1, background: "#0039A6" }} />
+          <div style={{ flex: 1, background: "#D52B1E" }} />
+        </div>
 
-        <div style={{ padding: "40px 48px 48px" }}>
-          {/* Надпись сверху */}
-          <div style={{ textAlign: "center", marginBottom: "32px" }}>
-            <p
-              style={{
-                fontSize: "0.65rem",
-                letterSpacing: "0.4em",
+        <div style={{ position: "relative", zIndex: 1, padding: "36px 52px 48px" }}>
+
+          {/* Шапка — герб + заголовок + флаг */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "28px" }}>
+            <Eagle size={90} />
+            <div style={{ textAlign: "center", flex: 1, padding: "0 20px" }}>
+              <p style={{
+                fontSize: "0.6rem",
+                letterSpacing: "0.45em",
                 textTransform: "uppercase",
                 color: "#c8a96e",
-                opacity: 0.8,
                 fontFamily: "'IBM Plex Sans', sans-serif",
-                marginBottom: "12px",
-              }}
-            >
-              Российская Федерация
-            </p>
-            <h1
-              style={{
-                fontSize: "2.8rem",
+                marginBottom: "10px",
+                opacity: 0.8,
+              }}>
+                Российская Федерация
+              </p>
+              <h1 style={{
+                fontSize: "2.6rem",
                 fontWeight: 300,
                 lineHeight: 1.05,
-                color: "#f0e8d0",
-                letterSpacing: "0.02em",
-                marginBottom: "8px",
-              }}
-            >
-              Единство
-              <br />
-              <span style={{ color: "#c8a96e", fontStyle: "italic" }}>народов России</span>
-            </h1>
-            <div
-              style={{
+                color: "#f2ead8",
+                letterSpacing: "0.01em",
+                textShadow: "0 0 40px rgba(200,169,110,0.3)",
+              }}>
+                Единство<br />
+                <span style={{ color: "#c8a96e", fontStyle: "italic", fontSize: "3rem" }}>
+                  народов России
+                </span>
+              </h1>
+              <div style={{
                 height: "1px",
-                background: "linear-gradient(90deg, transparent, rgba(200,169,110,0.5), transparent)",
-                margin: "16px auto",
-                width: "200px",
-              }}
-            />
-          </div>
-
-          {/* SVG — круговая схема народов */}
-          <div style={{ display: "flex", justifyContent: "center", marginBottom: "32px" }}>
-            <svg width="600" height="600" viewBox="0 0 600 600">
-              {/* Фон-свечение */}
-              <defs>
-                <radialGradient id="glow" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stopColor="#c8a96e" stopOpacity="0.12" />
-                  <stop offset="60%" stopColor="#c8a96e" stopOpacity="0.04" />
-                  <stop offset="100%" stopColor="#c8a96e" stopOpacity="0" />
-                </radialGradient>
-                <radialGradient id="centerGlow" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stopColor="#e8d08a" stopOpacity="0.25" />
-                  <stop offset="100%" stopColor="#c8a96e" stopOpacity="0" />
-                </radialGradient>
-                <filter id="blur">
-                  <feGaussianBlur stdDeviation="8" />
-                </filter>
-              </defs>
-
-              <circle cx={cx} cy={cy} r="270" fill="url(#glow)" />
-
-              {/* Кольца орнамента */}
-              {[270, 250, 155, 40].map((r, i) => (
-                <circle
-                  key={i}
-                  cx={cx}
-                  cy={cy}
-                  r={r}
-                  fill="none"
-                  stroke="#c8a96e"
-                  strokeWidth={i === 0 ? 0.5 : 0.3}
-                  strokeOpacity={i === 0 ? 0.15 : 0.1}
-                  strokeDasharray={i === 1 ? "2 8" : undefined}
-                />
-              ))}
-
-              {/* Точки по внешней окружности */}
-              {ORNAMENT_DOTS.map(({ x, y, i }) => (
-                <circle key={i} cx={x} cy={y} r="1.5" fill="#c8a96e" opacity="0.3" />
-              ))}
-
-              {/* Линии-лучи от центра */}
-              {Array.from({ length: 25 }, (_, i) => {
-                const angle = (i * 360) / 25;
-                const inner = polarToXY(cx, cy, 48, angle);
-                const outer = polarToXY(cx, cy, 248, angle);
-                return (
-                  <line
-                    key={i}
-                    x1={inner.x}
-                    y1={inner.y}
-                    x2={outer.x}
-                    y2={outer.y}
-                    stroke="#c8a96e"
-                    strokeWidth="0.4"
-                    strokeOpacity="0.12"
-                  />
-                );
-              })}
-
-              {/* Народы — кружки по спирали */}
-              {PEOPLES.map((name, i) => {
-                const angle = (i * 360) / PEOPLES.length;
-                // Чередуем радиус: три кольца
-                const ringR = i % 3 === 0 ? 200 : i % 3 === 1 ? 160 : 125;
-                const { x, y } = polarToXY(cx, cy, ringR, angle);
-                const dotR = 14;
-                return (
-                  <g key={i}>
-                    {/* Линия к центру */}
-                    <line
-                      x1={cx} y1={cy} x2={x} y2={y}
-                      stroke="#c8a96e" strokeWidth="0.6" strokeOpacity="0.2"
-                    />
-                    {/* Кружок */}
-                    <circle cx={x} cy={y} r={dotR + 2} fill="rgba(200,169,110,0.06)" />
-                    <circle
-                      cx={x} cy={y} r={dotR}
-                      fill="rgba(10,12,20,0.9)"
-                      stroke="#c8a96e"
-                      strokeWidth="0.8"
-                      strokeOpacity="0.5"
-                    />
-                    {/* Имя */}
-                    <text
-                      x={x} y={y}
-                      textAnchor="middle"
-                      dominantBaseline="middle"
-                      fill="#e8dfc8"
-                      fontSize="5.5"
-                      fontFamily="'IBM Plex Sans', sans-serif"
-                      opacity="0.9"
-                    >
-                      {name}
-                    </text>
-                  </g>
-                );
-              })}
-
-              {/* Центр — символ */}
-              <circle cx={cx} cy={cy} r="44" fill="url(#centerGlow)" />
-              <circle cx={cx} cy={cy} r="40" fill="rgba(10,12,20,0.95)" stroke="#c8a96e" strokeWidth="1" strokeOpacity="0.6" />
-              <circle cx={cx} cy={cy} r="33" fill="none" stroke="#c8a96e" strokeWidth="0.4" strokeOpacity="0.3" />
-
-              {/* Звезда в центре */}
-              {Array.from({ length: 8 }, (_, i) => {
-                const a1 = (i * 45);
-                const a2 = (i * 45 + 22.5);
-                const p1 = polarToXY(cx, cy, 22, a1);
-                const p2 = polarToXY(cx, cy, 10, a2);
-                const p3 = polarToXY(cx, cy, 22, a1 + 45);
-                return (
-                  <polygon
-                    key={i}
-                    points={`${p1.x},${p1.y} ${p2.x},${p2.y} ${p3.x},${p3.y}`}
-                    fill="#c8a96e"
-                    opacity="0.6"
-                  />
-                );
-              })}
-              <circle cx={cx} cy={cy} r="6" fill="#e8d08a" opacity="0.9" />
-
-              {/* Надпись по дуге — 193 народа */}
-              <path id="topArc" d={`M ${cx - 235},${cy} A 235,235 0 0,1 ${cx + 235},${cy}`} fill="none" />
-              <text fontSize="7.5" fontFamily="'IBM Plex Sans', sans-serif" fill="#c8a96e" opacity="0.45" letterSpacing="4">
-                <textPath href="#topArc" startOffset="10%">
-                  МНОГОНАЦИОНАЛЬНЫЙ НАРОД РОССИЙСКОЙ ФЕДЕРАЦИИ
-                </textPath>
-              </text>
-            </svg>
-          </div>
-
-          {/* Цитата */}
-          <div
-            style={{
-              textAlign: "center",
-              padding: "24px 32px",
-              margin: "0 0 28px",
-              background: "rgba(200,169,110,0.04)",
-              border: "1px solid rgba(200,169,110,0.12)",
-            }}
-          >
-            <p
-              style={{
-                fontSize: "1.25rem",
-                fontWeight: 300,
-                fontStyle: "italic",
-                color: "#e8dfc8",
-                lineHeight: 1.5,
-                marginBottom: "10px",
-              }}
-            >
-              «Мы — единый народ, единая страна,<br />
-              мы вместе можем преодолеть любые трудности»
-            </p>
-            <div
-              style={{
-                height: "1px",
-                background: "linear-gradient(90deg, transparent, rgba(200,169,110,0.4), transparent)",
-                margin: "12px auto",
-                width: "160px",
-              }}
-            />
-            <p
-              style={{
-                fontSize: "0.7rem",
-                letterSpacing: "0.15em",
-                color: "#c8a96e",
+                background: "linear-gradient(90deg, transparent, #D52B1E 20%, #c8a96e 50%, #0039A6 80%, transparent)",
+                margin: "14px auto",
+                width: "260px",
                 opacity: 0.6,
+              }} />
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px" }}>
+              <RussianFlag width={100} height={67} />
+              <span style={{
+                fontSize: "0.55rem",
+                letterSpacing: "0.2em",
+                color: "#c8a96e",
+                opacity: 0.5,
                 fontFamily: "'IBM Plex Sans', sans-serif",
                 textTransform: "uppercase",
-              }}
-            >
-              Конституция Российской Федерации, Преамбула
-            </p>
+              }}>
+                193 народа
+              </span>
+            </div>
           </div>
 
-          {/* Три столпа */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px", marginBottom: "32px" }}>
+          {/* Главное фото — народы вместе */}
+          <div style={{
+            position: "relative",
+            marginBottom: "28px",
+            borderRadius: "2px",
+            overflow: "hidden",
+            border: "1px solid rgba(200,169,110,0.25)",
+          }}>
+            <img
+              src={PEOPLES_IMG}
+              alt="Народы России вместе"
+              style={{ width: "100%", height: "280px", objectFit: "cover", objectPosition: "center top", display: "block" }}
+            />
+            {/* Градиентный оверлей */}
+            <div style={{
+              position: "absolute", inset: 0,
+              background: "linear-gradient(180deg, rgba(10,11,20,0) 40%, rgba(10,11,20,0.95) 100%)",
+            }} />
+            {/* Надпись поверх фото */}
+            <div style={{
+              position: "absolute", bottom: "20px", left: "28px", right: "28px",
+            }}>
+              <p style={{
+                fontFamily: "'Cormorant', serif",
+                fontSize: "1.4rem",
+                fontWeight: 300,
+                fontStyle: "italic",
+                color: "#f2ead8",
+                textShadow: "0 2px 20px rgba(0,0,0,0.8)",
+                lineHeight: 1.4,
+              }}>
+                «Мы — многонациональный народ Российской Федерации,
+                соединённые общей судьбой на своей земле»
+              </p>
+              <p style={{
+                fontFamily: "'IBM Plex Sans', sans-serif",
+                fontSize: "0.6rem",
+                letterSpacing: "0.2em",
+                color: "#c8a96e",
+                opacity: 0.7,
+                marginTop: "6px",
+              }}>
+                — Преамбула Конституции Российской Федерации
+              </p>
+            </div>
+          </div>
+
+          {/* Символика + народы */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "24px" }}>
+            {/* Символика */}
+            <div style={{
+              position: "relative",
+              borderRadius: "2px",
+              overflow: "hidden",
+              border: "1px solid rgba(200,169,110,0.2)",
+              height: "180px",
+            }}>
+              <img
+                src={SYMBOLS_IMG}
+                alt="Символика России"
+                style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+              />
+              <div style={{
+                position: "absolute", inset: 0,
+                background: "linear-gradient(135deg, rgba(10,11,20,0.6) 0%, rgba(10,11,20,0.1) 100%)",
+              }} />
+              <div style={{ position: "absolute", top: "16px", left: "16px" }}>
+                <p style={{
+                  fontFamily: "'IBM Plex Sans', sans-serif",
+                  fontSize: "0.55rem",
+                  letterSpacing: "0.3em",
+                  textTransform: "uppercase",
+                  color: "#c8a96e",
+                  marginBottom: "4px",
+                }}>
+                  Символы России
+                </p>
+                <p style={{
+                  fontFamily: "'Cormorant', serif",
+                  fontSize: "1.3rem",
+                  fontWeight: 300,
+                  color: "#f2ead8",
+                  lineHeight: 1.2,
+                }}>
+                  Флаг. Герб.<br />Гимн. Конституция.
+                </p>
+              </div>
+            </div>
+
+            {/* Народы плашки */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+              <p style={{
+                fontFamily: "'IBM Plex Sans', sans-serif",
+                fontSize: "0.55rem",
+                letterSpacing: "0.3em",
+                textTransform: "uppercase",
+                color: "#c8a96e",
+                marginBottom: "4px",
+                opacity: 0.7,
+              }}>
+                Народы России
+              </p>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4px", flex: 1 }}>
+                {PEOPLES.map((p, i) => {
+                  const colors = ["#D52B1E", "#0039A6", "#c8a96e", "#2e7d32", "#6a1b9a"];
+                  const color = colors[i % colors.length];
+                  return (
+                    <div
+                      key={i}
+                      style={{
+                        background: `${color}10`,
+                        border: `1px solid ${color}35`,
+                        borderLeft: `2px solid ${color}80`,
+                        padding: "4px 8px",
+                        borderRadius: "1px",
+                      }}
+                    >
+                      <div style={{
+                        fontFamily: "'IBM Plex Sans', sans-serif",
+                        fontSize: "0.65rem",
+                        color: "#e8dfc8",
+                        fontWeight: 500,
+                      }}>
+                        {p.name}
+                      </div>
+                      <div style={{
+                        fontFamily: "'IBM Plex Sans', sans-serif",
+                        fontSize: "0.5rem",
+                        color: color,
+                        opacity: 0.7,
+                      }}>
+                        {p.region}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* Три принципа */}
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr 1fr",
+            gap: "12px",
+            marginBottom: "28px",
+          }}>
             {[
-              { icon: "🤝", title: "Сотрудничество", text: "193 народа строят общее будущее" },
-              { icon: "🌍", title: "Уважение", text: "Каждая культура — богатство страны" },
-              { icon: "⭐", title: "Гордость", text: "Общая история объединяет нас" },
+              { flag: "🤝", color: "#D52B1E", title: "Дружба народов", text: "Братство и взаимоуважение — основа великой России" },
+              { flag: "🦅", color: "#c8a96e", title: "Общая история", text: "Столетия побед, испытаний и триумфов — вместе" },
+              { flag: "🌟", color: "#0039A6", title: "Сильная страна", text: "В единстве — наша сила и непобедимость" },
             ].map((item, i) => (
               <div
                 key={i}
                 style={{
+                  background: `${item.color}08`,
+                  border: `1px solid ${item.color}30`,
+                  borderTop: `3px solid ${item.color}`,
+                  padding: "16px 14px",
                   textAlign: "center",
-                  padding: "18px 12px",
-                  background: "rgba(255,255,255,0.02)",
-                  border: "1px solid rgba(200,169,110,0.1)",
+                  borderRadius: "1px",
                 }}
               >
-                <div style={{ fontSize: "1.6rem", marginBottom: "8px" }}>{item.icon}</div>
-                <div
-                  style={{
-                    fontSize: "0.75rem",
-                    letterSpacing: "0.1em",
-                    textTransform: "uppercase",
-                    color: "#c8a96e",
-                    marginBottom: "6px",
-                    fontFamily: "'IBM Plex Sans', sans-serif",
-                  }}
-                >
+                <div style={{ fontSize: "1.8rem", marginBottom: "8px" }}>{item.flag}</div>
+                <div style={{
+                  fontFamily: "'Cormorant', serif",
+                  fontSize: "0.95rem",
+                  color: item.color,
+                  marginBottom: "6px",
+                  fontWeight: 500,
+                }}>
                   {item.title}
                 </div>
-                <div
-                  style={{
-                    fontSize: "0.7rem",
-                    color: "#e8dfc8",
-                    opacity: 0.5,
-                    lineHeight: 1.5,
-                    fontFamily: "'IBM Plex Sans', sans-serif",
-                  }}
-                >
+                <div style={{
+                  fontFamily: "'IBM Plex Sans', sans-serif",
+                  fontSize: "0.62rem",
+                  color: "#e8dfc8",
+                  opacity: 0.55,
+                  lineHeight: 1.5,
+                }}>
                   {item.text}
                 </div>
               </div>
             ))}
           </div>
 
-          {/* Подпись */}
-          <div style={{ textAlign: "center" }}>
-            <div
-              style={{
-                height: "1px",
-                background: "linear-gradient(90deg, transparent, rgba(200,169,110,0.3), transparent)",
-                marginBottom: "16px",
-              }}
-            />
-            <p
-              style={{
-                fontSize: "0.6rem",
-                letterSpacing: "0.3em",
-                textTransform: "uppercase",
-                color: "#c8a96e",
-                opacity: 0.35,
-                fontFamily: "'IBM Plex Sans', sans-serif",
-              }}
-            >
-              Россия · 2024 · Единство в многообразии
+          {/* Девиз */}
+          <div style={{
+            textAlign: "center",
+            padding: "22px 40px",
+            background: "rgba(200,169,110,0.05)",
+            border: "1px solid rgba(200,169,110,0.2)",
+            position: "relative",
+            overflow: "hidden",
+          }}>
+            {/* Декоративные звёзды */}
+            {["8%", "92%"].map((left, i) => (
+              <div key={i} style={{
+                position: "absolute",
+                top: "50%",
+                left,
+                transform: "translate(-50%, -50%)",
+                fontSize: "1.2rem",
+                opacity: 0.3,
+              }}>★</div>
+            ))}
+            <p style={{
+              fontFamily: "'Cormorant', serif",
+              fontSize: "1.6rem",
+              fontWeight: 300,
+              letterSpacing: "0.08em",
+              color: "#f2ead8",
+              marginBottom: "6px",
+              textTransform: "uppercase",
+            }}>
+              Россия — единая и неделимая
             </p>
+            <div style={{ display: "flex", justifyContent: "center", gap: "16px", alignItems: "center" }}>
+              <div style={{ height: "1px", width: "60px", background: "#D52B1E", opacity: 0.6 }} />
+              <span style={{ fontSize: "1rem", opacity: 0.5 }}>★</span>
+              <div style={{ height: "1px", width: "60px", background: "#0039A6", opacity: 0.6 }} />
+            </div>
           </div>
+
         </div>
 
-        {/* Нижняя полоса */}
-        <div style={{ height: "3px", background: "linear-gradient(90deg, transparent, #c8a96e 30%, #e8d08a 50%, #c8a96e 70%, transparent)", opacity: 0.7 }} />
+        {/* Нижняя полоса — цвета флага */}
+        <div style={{ display: "flex", height: "6px", position: "relative", zIndex: 1 }}>
+          <div style={{ flex: 1, background: "#D52B1E" }} />
+          <div style={{ flex: 1, background: "#0039A6" }} />
+          <div style={{ flex: 1, background: "#FFFFFF" }} />
+        </div>
       </div>
 
-      {/* Подсказка */}
-      <p
-        className="mt-6 text-center text-xs opacity-30"
-        style={{ color: "#e8dfc8", fontFamily: "'IBM Plex Sans', sans-serif" }}
-      >
-        Для скриншота используйте Print Screen или встроенный инструмент снимка экрана
+      <p style={{
+        marginTop: "20px",
+        fontFamily: "'IBM Plex Sans', sans-serif",
+        fontSize: "0.7rem",
+        color: "#e8dfc8",
+        opacity: 0.25,
+        textAlign: "center",
+      }}>
+        Для скриншота: F12 → Ctrl+Shift+M → ширина 680px → Print Screen
       </p>
+
+      <style>{`
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translateY(16px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </div>
   );
 }
