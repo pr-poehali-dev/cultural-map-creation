@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import Icon from "@/components/ui/icon";
 
 const REGIONS = [
@@ -206,6 +207,13 @@ export default function Index() {
             </p>
           </div>
           <nav className="flex items-center gap-1">
+            <Link
+              to="/languages"
+              className="flex items-center gap-2 px-4 py-2 text-sm rounded transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-secondary mr-2"
+            >
+              <Icon name="Languages" size={15} />
+              Языки народов
+            </Link>
             {(["map", "regions", "search"] as View[]).map((v) => {
               const labels: Record<View, string> = { map: "Карта", regions: "Регионы", search: "Поиск" };
               const icons: Record<View, string> = { map: "Map", regions: "BookOpen", search: "Search" };
