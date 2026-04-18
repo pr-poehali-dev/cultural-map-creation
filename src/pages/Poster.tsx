@@ -92,15 +92,18 @@ export default function Poster() {
     setDownloading(true);
     try {
       const canvas = await html2canvas(posterRef.current, {
-        scale: 2,
+        scale: 3,
         useCORS: true,
         allowTaint: true,
         backgroundColor: "#fdfaf4",
         logging: false,
+        imageTimeout: 15000,
       });
-      const imgData = canvas.toDataURL("image/jpeg", 0.95);
-      const pdf = new jsPDF({ orientation: "portrait", unit: "px", format: [canvas.width / 2, canvas.height / 2] });
-      pdf.addImage(imgData, "JPEG", 0, 0, canvas.width / 2, canvas.height / 2);
+      const imgData = canvas.toDataURL("image/png");
+      const w = canvas.width / 3;
+      const h = canvas.height / 3;
+      const pdf = new jsPDF({ orientation: "portrait", unit: "px", format: [w, h] });
+      pdf.addImage(imgData, "PNG", 0, 0, w, h);
       pdf.save("plakat-edinstvo-narodov.pdf");
     } finally {
       setDownloading(false);
