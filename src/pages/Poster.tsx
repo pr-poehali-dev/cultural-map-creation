@@ -1,10 +1,21 @@
 import { Link } from "react-router-dom";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import Icon from "@/components/ui/icon";
 import html2canvas from "html2canvas";
+import { jsPDF } from "jspdf";
 
-const PEOPLES_IMG = "https://cdn.poehali.dev/projects/1b1581b6-ac92-4b5f-adce-b651ee5e6b7e/files/f95dac0a-cdfd-43a7-9657-e149e6b1705b.jpg";
-const SYMBOLS_IMG = "https://cdn.poehali.dev/projects/1b1581b6-ac92-4b5f-adce-b651ee5e6b7e/files/266e85be-1493-4abd-84c0-53f73141767d.jpg";
+const PEOPLES_IMG_URL = "https://cdn.poehali.dev/projects/1b1581b6-ac92-4b5f-adce-b651ee5e6b7e/files/f95dac0a-cdfd-43a7-9657-e149e6b1705b.jpg";
+const SYMBOLS_IMG_URL = "https://cdn.poehali.dev/projects/1b1581b6-ac92-4b5f-adce-b651ee5e6b7e/files/266e85be-1493-4abd-84c0-53f73141767d.jpg";
+
+async function toBase64(url: string): Promise<string> {
+  const res = await fetch(url);
+  const blob = await res.blob();
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result as string);
+    reader.readAsDataURL(blob);
+  });
+}
 
 const PEOPLES = [
   { name: "Русские", region: "Центральная Россия" },
@@ -68,6 +79,13 @@ function RussianFlag({ width = 120, height = 80 }: { width?: number; height?: nu
 export default function Poster() {
   const posterRef = useRef<HTMLDivElement>(null);
   const [downloading, setDownloading] = useState(false);
+  const [peoplesImg, setPeoplesImg] = useState(PEOPLES_IMG_URL);
+  const [symbolsImg, setSymbolsImg] = useState(SYMBOLS_IMG_URL);
+
+  useEffect(() => {
+    toBase64(PEOPLES_IMG_URL).then(setPeoplesImg).catch(() => {});
+    toBase64(SYMBOLS_IMG_URL).then(setSymbolsImg).catch(() => {});
+  }, []);
 
   const handleDownload = async () => {
     if (!posterRef.current) return;
@@ -76,13 +94,14 @@ export default function Poster() {
       const canvas = await html2canvas(posterRef.current, {
         scale: 2,
         useCORS: true,
-        backgroundColor: "#faf8f3",
+        allowTaint: true,
+        backgroundColor: "#fdfaf4",
         logging: false,
       });
-      const link = document.createElement("a");
-      link.download = "plakat-edinstvo-narodov.png";
-      link.href = canvas.toDataURL("image/png");
-      link.click();
+      const imgData = canvas.toDataURL("image/jpeg", 0.95);
+      const pdf = new jsPDF({ orientation: "portrait", unit: "px", format: [canvas.width / 2, canvas.height / 2] });
+      pdf.addImage(imgData, "JPEG", 0, 0, canvas.width / 2, canvas.height / 2);
+      pdf.save("plakat-edinstvo-narodov.pdf");
     } finally {
       setDownloading(false);
     }
@@ -216,7 +235,7 @@ export default function Poster() {
             boxShadow: "0 2px 12px rgba(100,70,10,0.1)",
           }}>
             <img
-              src={PEOPLES_IMG}
+              src={peoplesImg}
               alt="Народы России вместе"
               style={{ width: "100%", height: "270px", objectFit: "cover", objectPosition: "center top", display: "block" }}
             />
@@ -259,7 +278,7 @@ export default function Poster() {
               boxShadow: "0 2px 8px rgba(100,70,10,0.08)",
             }}>
               <img
-                src={SYMBOLS_IMG}
+                src={symbolsImg}
                 alt="Символика России"
                 style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
               />
@@ -267,27 +286,7 @@ export default function Poster() {
                 position: "absolute", inset: 0,
                 background: "linear-gradient(135deg, rgba(253,250,244,0.88) 0%, rgba(253,250,244,0.2) 60%)",
               }} />
-              <div style={{ position: "absolute", top: "16px", left: "16px" }}>
-                <p style={{
-                  fontFamily: "'IBM Plex Sans', sans-serif",
-                  fontSize: "0.52rem",
-                  letterSpacing: "0.3em",
-                  textTransform: "uppercase",
-                  color: "#9a7000",
-                  marginBottom: "4px",
-                }}>
-                  Символы России
-                </p>
-                <p style={{
-                  fontFamily: "'Cormorant', serif",
-                  fontSize: "1.25rem",
-                  fontWeight: 400,
-                  color: "#1a1206",
-                  lineHeight: 1.3,
-                }}>
-                  Флаг. Герб.<br />Гимн. Конституция.
-                </p>
-              </div>
+              
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
@@ -342,7 +341,7 @@ export default function Poster() {
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px", marginBottom: "26px" }}>
             {[
               { icon: "🤝", color: "#D52B1E", title: "Дружба народов", text: "Братство и взаимоуважение — основа великой России" },
-              { icon: "🦅", color: "#b8860b", title: "Общая история", text: "Столетия побед, испытаний и триумфов — вместе" },
+              { icon: "📜", color: "#b8860b", title: "Общая история", text: "Столетия побед, испытаний и триумфов — вместе" },
               { icon: "🌟", color: "#0039A6", title: "Сильная страна", text: "В единстве — наша сила и непобедимость" },
             ].map((item, i) => (
               <div
